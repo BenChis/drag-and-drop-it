@@ -66,7 +66,12 @@ class ProjectInput {
   private submitHandler(event: Event) {
     event.preventDefault();
     const userInput = this.gatherUserInput();
-    console.log(userInput);
+
+    if (Array.isArray(userInput)) {
+      const [title, description, people] = userInput;
+      console.log(title, description, people);
+      this.clearInputs();
+    }
   }
 
   private configure() {
@@ -75,6 +80,12 @@ class ProjectInput {
 
   private attach() {
     this.hostElement.insertAdjacentElement('afterbegin', this.element);
+  }
+
+  private clearInputs() {
+    this.$titleInput.value = '';
+    this.$descriptionInput.value = '';
+    this.$peopleInput.value = '';
   }
 }
 
