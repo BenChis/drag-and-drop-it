@@ -62,6 +62,18 @@ class ProjectState extends State<Project> {
     );
 
     this.projects.push(newProject);
+    this.updateListeners();
+  }
+
+  moveProject(projectId: string, newStatus: ProjectStatus) {
+    const project = this.projects.find((prj) => prj.id === projectId);
+    if (project && project.status !== newStatus) {
+      project.status = newStatus;
+    }
+    this.updateListeners();
+  }
+
+  private updateListeners() {
     for (const listenerFn of this.listeners) {
       listenerFn(this.projects.slice());
     }
@@ -206,7 +218,6 @@ class ProjectItem
   }
 
   renderContent() {
-    console.log(this.element.querySelector('h2'));
     this.element.querySelector('h2')!.textContent = this.project.title;
     this.element.querySelector('h3')!.textContent = this.persons + ' assigned';
     this.element.querySelector('p')!.textContent = this.project.description;
@@ -242,9 +253,14 @@ class ProjectList
     listEl.classList.remove('droppable');
   }
 
+  @autobind
   dropHandler(event: DragEvent): void {
-    console.log(event.dataTransfer!.getData('text/plain'));
-    console.log(event);
+    const prjId = event.dataTransfer!.getData('text/plain');
+
+    projectState.moveProject(
+      prjId,
+      this.type == 'active' ? ProjectStatus.Active : ProjectStatus.Finished
+    );
   }
 
   configure() {
@@ -353,7 +369,6 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
     if (Array.isArray(userInput)) {
       const [title, description, people] = userInput;
       projectState.addProject(title, description, people);
-      console.log(title, description, people);
       this.clearInputs();
     }
   }
