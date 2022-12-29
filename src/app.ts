@@ -1,3 +1,5 @@
+// Dra
+
 // Project Type
 enum ProjectStatus {
   Active,
@@ -31,7 +33,7 @@ class ProjectState extends State<Project> {
   private constructor() {
     super();
   }
- 
+
   static getInstance() {
     if (this.instance) {
       return this.instance;
@@ -138,7 +140,7 @@ abstract class Component<T extends HTMLElement, U extends HTMLElement> {
     );
     this.element = importedNode.firstElementChild as U;
     if (newElementId) {
-      this.element.id = `${newElementId}-projects`;
+      this.element.id = newElementId;
     }
     this.attach(insertAtStart);
   }
@@ -151,6 +153,37 @@ abstract class Component<T extends HTMLElement, U extends HTMLElement> {
 
   abstract configure(): void;
   abstract renderContent(): void;
+}
+
+//  Project Item
+
+class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> {
+  private project: Project;
+
+  get persons() {
+    if (this.project.people === 1) {
+      return '1 person';
+    } else {
+      return `${this.project.people} persons`;
+    }
+  }
+
+  constructor(hostId: string, project: Project) {
+    super('single-project', hostId, false, project.id);
+    this.project = project;
+
+    this.configure();
+    this.renderContent();
+  }
+
+  configure() {}
+
+  renderContent() {
+    console.log(this.element.querySelector('h2'));
+    this.element.querySelector('h2')!.textContent = this.project.title;
+    this.element.querySelector('h3')!.textContent = this.persons + ' assigned';
+    this.element.querySelector('p')!.textContent = this.project.description;
+  }
 }
 
 class ProjectList extends Component<HTMLDivElement, HTMLElement> {
@@ -192,9 +225,7 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement> {
     listEl.innerHTML = '';
 
     for (const prjItem of this.assignedProjects) {
-      const listItem = document.createElement('li');
-      listItem.textContent = prjItem.title;
-      listEl.appendChild(listItem);
+      new ProjectItem(this.element.querySelector('ul')!.id, prjItem);
     }
   }
 }
@@ -252,9 +283,6 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
       !validate(titleValidatabel) ||
       !validate(descriptionValidatabel) ||
       !validate(peopleValidatabel)
-      //   enteredTitle.trim().length === 0 ||
-      //   enteredDescription.trim().length === 0 ||
-      //   enteredPeople.trim().length === 0
     ) {
       alert('Invalid input, please try again');
       return;
