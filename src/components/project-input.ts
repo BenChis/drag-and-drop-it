@@ -1,10 +1,10 @@
-import { Component } from './base-component.js';
-import { Validatable, validate } from '../util/validation.js';
-import { autobind } from '../decorators/autobind.js';
+import Cmp from './base-component.js';
+import * as Validation from '../util/validation.js';
+import { autobind as Autobind } from '../decorators/autobind.js';
 import { projectState } from '../state/project-state.js';
 
 // ProjectInput Class
-export class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
+export class ProjectInput extends Cmp<HTMLDivElement, HTMLFormElement> {
   $titleInput: HTMLInputElement;
   $descriptionInput: HTMLInputElement;
   $peopleInput: HTMLInputElement;
@@ -36,16 +36,16 @@ export class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
     const enteredDescription = this.$descriptionInput.value;
     const enteredPeople = this.$peopleInput.value;
 
-    const titleValidatabel: Validatable = {
+    const titleValidatabel: Validation.Validatable = {
       value: enteredTitle,
       required: true,
     };
-    const descriptionValidatabel: Validatable = {
+    const descriptionValidatabel: Validation.Validatable = {
       value: enteredDescription,
       required: true,
       minLength: 5,
     };
-    const peopleValidatabel: Validatable = {
+    const peopleValidatabel: Validation.Validatable = {
       value: +enteredPeople,
       required: true,
       min: 1,
@@ -53,9 +53,9 @@ export class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
     };
 
     if (
-      !validate(titleValidatabel) ||
-      !validate(descriptionValidatabel) ||
-      !validate(peopleValidatabel)
+      !Validation.validate(titleValidatabel) ||
+      !Validation.validate(descriptionValidatabel) ||
+      !Validation.validate(peopleValidatabel)
     ) {
       alert('Invalid input, please try again');
       return;
@@ -64,7 +64,7 @@ export class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
     }
   }
 
-  @autobind
+  @Autobind
   private submitHandler(event: Event) {
     event.preventDefault();
     const userInput = this.gatherUserInput();
